@@ -5,7 +5,8 @@ const bodyParser = require("body-parser"),
   express = require("express"),
   app = express();
 
-mongoose.connect("mongodb://localhost/restful_blog_app", {
+// mongodb://localhost/restful_blog_app
+mongoose.connect(process.env.databaseURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -35,13 +36,13 @@ const Blog = mongoose.model("Blog", blogSchema);
 
 // RESTFUL ROUTING
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.redirect("/blogs");
 });
 
 // INDEX
-app.get("/blogs", function(req, res) {
-  Blog.find({}, function(err, blogs) {
+app.get("/blogs", function (req, res) {
+  Blog.find({}, function (err, blogs) {
     if (err) {
       console.log(err);
     } else {
@@ -51,15 +52,15 @@ app.get("/blogs", function(req, res) {
 });
 
 // NEW
-app.get("/blogs/new", function(req, res) {
+app.get("/blogs/new", function (req, res) {
   res.render("new");
 });
 
 // CREATE
-app.post("/blogs", function(req, res) {
+app.post("/blogs", function (req, res) {
   // create  blog
   req.body.blog.body = req.sanitize(req.body.blog.body);
-  Blog.create(req.body.blog, function(err, newBlog) {
+  Blog.create(req.body.blog, function (err, newBlog) {
     if (err) {
       res.render("new");
     } else {
@@ -69,8 +70,8 @@ app.post("/blogs", function(req, res) {
 });
 
 // SHOW
-app.get("/blogs/:id", function(req, res) {
-  Blog.findById(req.params.id, function(err, foundBlog) {
+app.get("/blogs/:id", function (req, res) {
+  Blog.findById(req.params.id, function (err, foundBlog) {
     if (err) {
       res.redirect("/blogs");
     } else {
@@ -80,8 +81,8 @@ app.get("/blogs/:id", function(req, res) {
 });
 
 // EDIT
-app.get("/blogs/:id/edit", function(req, res) {
-  Blog.findById(req.params.id, function(err, foundBlog) {
+app.get("/blogs/:id/edit", function (req, res) {
+  Blog.findById(req.params.id, function (err, foundBlog) {
     if (err) {
       res.redirect("/blogs");
     } else {
@@ -91,9 +92,9 @@ app.get("/blogs/:id/edit", function(req, res) {
 });
 
 // UPDATE
-app.put("/blogs/:id", function(req, res) {
+app.put("/blogs/:id", function (req, res) {
   req.body.blog.body = req.sanitize(req.body.blog.body);
-  Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(
+  Blog.findByIdAndUpdate(req.params.id, req.body.blog, function (
     err,
     updatedBlog
   ) {
@@ -106,9 +107,9 @@ app.put("/blogs/:id", function(req, res) {
 });
 
 // DESTROY
-app.delete("/blogs/:id", function(req, res) {
+app.delete("/blogs/:id", function (req, res) {
   // Destroy
-  Blog.findByIdAndDelete(req.params.id, function(err) {
+  Blog.findByIdAndDelete(req.params.id, function (err) {
     if (err) {
       res.redirect("/blogs");
     } else {
@@ -117,6 +118,6 @@ app.delete("/blogs/:id", function(req, res) {
   });
 });
 
-app.listen(5000, function() {
+app.listen(process.env.PORT, process.env.IP, function () {
   console.log("Server is running");
 });
